@@ -23,11 +23,12 @@ endmodule
 
 
 module fifomem #(parameter DATASIZE = 8, // Memory data word width
-				 parameter ADDRSIZE = 4) // Number of mem address bit
-				 (output [DATASIZE-1:0] rdata,
-				 input [DATASIZE-1:0] wdata,
-				 input [ADDRSIZE-1:0] waddr, raddr,
-				 input wclken, wfull, wclk);
+		 parameter ADDRSIZE = 4) // Number of mem address bit
+		 (output [DATASIZE-1:0] rdata,
+		 input [DATASIZE-1:0] wdata,
+		 input [ADDRSIZE-1:0] waddr, raddr,
+		 input wclken, wfull, wclk);
+	
 	`ifdef VENDORRAM
 		// instantiation of a vendor's dual-port RAM
 		vendor_ram mem (.dout(rdata), .din(wdata),
@@ -45,8 +46,8 @@ module fifomem #(parameter DATASIZE = 8, // Memory data word width
 endmodule
 
 module sync_r2w #(parameter ADDRSIZE = 4)(output reg [ADDRSIZE:0] wq2_rptr,
-										  input [ADDRSIZE:0] rptr,
-										  input wclk, wrst_n);
+					  input [ADDRSIZE:0] rptr,
+					  input wclk, wrst_n);
 	reg [ADDRSIZE:0] wq1_rptr;
 	always @(posedge wclk or negedge wrst_n)
 		if (!wrst_n) {wq2_rptr,wq1_rptr} <= 0;
@@ -54,7 +55,7 @@ module sync_r2w #(parameter ADDRSIZE = 4)(output reg [ADDRSIZE:0] wq2_rptr,
 endmodule
 
 module sync_w2r #(parameter ADDRSIZE = 4)(output reg [ADDRSIZE:0] rq2_wptr,
-										  input [ADDRSIZE:0] wptr,input rclk, rrst_n);
+					  input [ADDRSIZE:0] wptr,input rclk, rrst_n);
 
 	reg [ADDRSIZE:0] rq1_wptr;
 	always @(posedge rclk or negedge rrst_n)
@@ -62,11 +63,11 @@ module sync_w2r #(parameter ADDRSIZE = 4)(output reg [ADDRSIZE:0] rq2_wptr,
 		else {rq2_wptr,rq1_wptr} <= {rq1_wptr,wptr};
 endmodule
 
-module rptr_empty #(parameter ADDRSIZE = 4)(output reg rempty,
-											output [ADDRSIZE-1:0] raddr,
-											output reg [ADDRSIZE :0] rptr,
-											input [ADDRSIZE :0] rq2_wptr,
-											input rinc, rclk, rrst_n);
+module rptr_empty #(parameter ADDRSIZE = 4)(    output reg rempty,
+				        	output [ADDRSIZE-1:0] raddr,
+						output reg [ADDRSIZE :0] rptr,
+						input [ADDRSIZE :0] rq2_wptr,
+						input rinc, rclk, rrst_n);
 	reg [ADDRSIZE:0] rbin;
 	wire [ADDRSIZE:0] rgraynext, rbinnext;
 	//-------------------
@@ -89,9 +90,9 @@ module rptr_empty #(parameter ADDRSIZE = 4)(output reg rempty,
 endmodule
 
 module wptr_full #(parameter ADDRSIZE = 4)(output reg wfull,output [ADDRSIZE-1:0] waddr,
-										   output reg [ADDRSIZE :0] wptr,
-										   input [ADDRSIZE :0] wq2_rptr,
-										   input winc, wclk, wrst_n);
+					   output reg [ADDRSIZE :0] wptr,
+					   input [ADDRSIZE :0] wq2_rptr,
+					   input winc, wclk, wrst_n);
 	reg [ADDRSIZE:0] wbin;
 	wire [ADDRSIZE:0] wgraynext, wbinnext;
 	// GRAYSTYLE2 pointer
